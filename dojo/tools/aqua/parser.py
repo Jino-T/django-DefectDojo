@@ -99,6 +99,57 @@ def get_item(resource, vuln, test):
         component_version=resource.get('version'),
         impact=severity)
 
+def get_item_v2(item, test):
+    cve = item['name']
+    file_path = item['file']
+    url = item.get('url')
+    severity = severity_of(float(item['score']))
+    description = item.get('description')
+    solution = item.get('solution')
+    fix_version = item.get('fix_version')
+    if solution:
+        mitigation = solution
+    elif fix_version:
+        mitigation = ('Upgrade to ' + str(fix_version))
+    else:
+        mitigation = 'No known mitigation'
+
+    return Finding(title=str(cve) + ': ' + str(file_path),
+                   description=description,
+                   url=url,
+                   cwe=0,
+                   cve=cve,
+                   test=test,
+                   severity=severity,
+                   impact=severity,
+                   mitigation=mitigation)
+
+
+def aqua_severity_of(score):
+    if score == 'high':
+        return "High"
+    if score == 'medium':
+        return "Medium"
+    elif score == 'low':
+        return "Low"
+    elif score == "negligible":
+        return "Info"
+    else:
+        return "Critical"
+
+
+def severity_of(score):
+    if score == 0:
+        return "Info"
+    elif score < 4:
+        return "Low"
+    elif 4.0 < score < 7.0:
+        return "Medium"
+    elif 7.0 < score < 9.0:
+        return "High"
+    else:
+        return "Critical"
+
 def get_fields(self) -> list[str]:
     """Return the list of fields used in the Aqua Parser.
 
@@ -143,31 +194,6 @@ def get_dedupe_fields(self) -> list[str]:
         "component_version",
     ]
 
-def get_item_v2(item, test):
-    cve = item['name']
-    file_path = item['file']
-    url = item.get('url')
-    severity = severity_of(float(item['score']))
-    description = item.get('description')
-    solution = item.get('solution')
-    fix_version = item.get('fix_version')
-    if solution:
-        mitigation = solution
-    elif fix_version:
-        mitigation = ('Upgrade to ' + str(fix_version))
-    else:
-        mitigation = 'No known mitigation'
-
-    return Finding(title=str(cve) + ': ' + str(file_path),
-                   description=description,
-                   url=url,
-                   cwe=0,
-                   cve=cve,
-                   test=test,
-                   severity=severity,
-                   impact=severity,
-                   mitigation=mitigation)
-
 #Jino This get_fields was written for the Aque Parser v2 (based off of "get_iten_v2")
 #What do we do with the seperate versions of this parser?
 #def get_fields(self) -> list[str]:
@@ -192,28 +218,3 @@ def get_item_v2(item, test):
 #        "impact",
 #        "mitigation",
 #    ]
-
-def aqua_severity_of(score):
-    if score == 'high':
-        return "High"
-    if score == 'medium':
-        return "Medium"
-    elif score == 'low':
-        return "Low"
-    elif score == "negligible":
-        return "Info"
-    else:
-        return "Critical"
-
-
-def severity_of(score):
-    if score == 0:
-        return "Info"
-    elif score < 4:
-        return "Low"
-    elif 4.0 < score < 7.0:
-        return "Medium"
-    elif 7.0 < score < 9.0:
-        return "High"
-    else:
-        return "Critical"
