@@ -99,6 +99,50 @@ def get_item(resource, vuln, test):
         component_version=resource.get('version'),
         impact=severity)
 
+def get_fields(self) -> list[str]:
+    """Return the list of fields used in the Aqua Parser.
+
+    Fields:
+    - title: Made by combining cve, resource_name, and resource_version.
+    - severity: Severity converted from Aqua format into Defect Dojo format.
+    - severity_justification: Set to justification returned by Aqua scanner.
+    - cve: Set to cve returned from Aqua scanner.
+    - cvssv3: Defined based on the output of the Aqua Scanner.
+    - description: Set to description returned from Aqua Scanner. If no description is present set to "no description".
+    - mitigation: Set to fix_version returned from Aqua Scanner.
+    - references: Set to url returned from Aqua Scanner.
+    - component_name: Set to name returned from Aqua Scanner.
+    - component_version: Set to version returned from Aqua Scanner.
+    - impact: Set to same value as severity.
+    """
+    return [
+        "title",
+        "severity",
+        "severity_justification",
+        "cve",
+        "cvssv3",
+        "description",
+        "mitigation",
+        "references",
+        "component_name",
+        "component_version",
+        "impact",
+    ]
+
+def get_dedupe_fields(self) -> list[str]:
+    """Return the list of fields used for deduplication in the Aqua Parser.
+
+    Fields:
+    - severity: Severity converted from Aqua format into Defect Dojo format.
+    - component_name: Set to name returned from Aqua Scanner.
+    - component_version: Set to version returned from Aqua Scanner.
+    """
+    return [
+        "severity",
+        "component_name",
+        "component_version",
+    ]
+
 def get_item_v2(item, test):
     cve = item['name']
     file_path = item['file']
@@ -124,28 +168,30 @@ def get_item_v2(item, test):
                    impact=severity,
                    mitigation=mitigation)
 
-def get_fields(self) -> list[str]:
-    """Return the list of fields used in the Aqua Parser V2
-
-    Fields:
-    - title: Created by combining the finding's cve and file_path
-    - description: Text describing finding
-    - url: Url associated with the finding
-    - cve: The Common Vulnerabilities and Exposures varchar(50) value associated with the finding.
-    - severity: Severity rating converted from Aqua's integer format into DefectDojo's format.
-      #Jino: On line 106 it calls severity_of instead of aqua_severity_of. get_item v1 uses aqua_severity_of#
-    - impact: Impact rating of finding. Same as the finding severity.
-    - mitigation: If solution is true, mitigation equals true. If fix_version is true, mitigation equals 'Upgrade to True'.If neither are true mitigation equals 'No known mitigation'.
-    """
-    return [
-        "title",
-        "description",
-        "url",
-        "cve",
-        "severity",
-        "impact",
-        "mitigation",
-    ]
+#Jino This get_fields was written for the Aque Parser v2 (based off of "get_iten_v2")
+#What do we do with the seperate versions of this parser?
+#def get_fields(self) -> list[str]:
+#    """Return the list of fields used in the Aqua Parser V2
+#
+#    Fields:
+#    - title: Created by combining the finding's cve and file_path
+#    - description: Text describing finding
+#    - url: Url associated with the finding
+#    - cve: The Common Vulnerabilities and Exposures varchar(50) value associated with the finding.
+#    - severity: Severity rating converted from Aqua's integer format into DefectDojo's format.
+#      #Jino: On line 106 it calls severity_of instead of aqua_severity_of. get_item v1 uses aqua_severity_of#
+#    - impact: Impact rating of finding. Same as the finding severity.
+#    - mitigation: If solution is true, mitigation equals true. If fix_version is true, mitigation equals 'Upgrade to True'.If neither are true mitigation equals 'No known mitigation'.
+#    """
+#    return [
+#        "title",
+#        "description",
+#        "url",
+#        "cve",
+#        "severity",
+#        "impact",
+#        "mitigation",
+#    ]
 
 def aqua_severity_of(score):
     if score == 'high':
