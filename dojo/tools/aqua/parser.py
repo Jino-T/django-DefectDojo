@@ -125,36 +125,27 @@ def get_item_v2(item, test):
                    mitigation=mitigation)
 
 def get_fields(self) -> list[str]:
-    """Return the list of fields used in Aqua Parser
+    """Return the list of fields used in the Aqua Parser V2
 
     Fields:
     - title: Created by combining the finding's cve and file_path
     - description: Text describing finding
     - url: Url associated with the finding
-    - cwe: The Common Weaknes Enumeration integer associated with the finding. This variable is always set to 0.
-
-      #Jino: is this worth listing ^#
-
     - cve: The Common Vulnerabilities and Exposures varchar(50) value associated with the finding.
-    - test: test_id integer associated with the finding.
-
-     #Jino: Is this the same as the test_id listed in the finding object? https://github.com/DefectDojo-Inc/defectdojo-db-documentation/blob/master/public.dojo_finding.md #
-
     - severity: Severity rating converted from Aqua's integer format into DefectDojo's format.
-
-      #Jino: On line 106 it calls severity_of instead of aqua_severity_of. get_item v1 uses aqua_severity_of
-
+      #Jino: On line 106 it calls severity_of instead of aqua_severity_of. get_item v1 uses aqua_severity_of#
     - impact: Impact rating of finding. Same as the finding severity.
-
-      #Jino: Do I still list impact even if it is the same as severity? Look at line 124
-
     - mitigation: If solution is true, mitigation equals true. If fix_version is true, mitigation equals 'Upgrade to True'.If neither are true mitigation equals 'No known mitigation'.
-
-      #Jino: I don't know what fields should be used in dedupe. #
-
     """
-    print("return the list of objects here")
-
+    return [
+        "title",
+        "description",
+        "url",
+        "cve",
+        "severity",
+        "impact",
+        "mitigation",
+    ]
 
 def aqua_severity_of(score):
     if score == 'high':
