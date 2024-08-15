@@ -250,3 +250,49 @@ class CheckmarxParser(object):
         if query.get('categories') is not None:
             categories = query.get('categories')
         return name, cwe, categories
+
+def get_fields(self) -> list[str]:
+    """Return the list of fields used in the Checkmarx Parser.
+
+    Fields:
+    - cwe: Set to cwe outputted by Checkmarx Parser.
+    - description: Made from combining linenumber, column, source object, and number.
+    - severity: Set to severity outputted by Checkmarx Scanner.
+    - file_path: Set to filename outputted by Checkmarx Scanner.
+    - line: Set to line outputted by Checkmarx Scanner.
+    - date: Set to Checkmarx scan start date.
+    - nb_occurences: Inittially set to 1 and then updated accordingly.
+    - unique_id_from_tool: [If mode set to detailed] Set to the unique pathId outputted by Checkmarx Parser.
+    - sast_source_object: [If mode set to detailed] Set to sourceObject outputted by Checkmarx Parser.
+    - sast_sink_object: [If mode set to detailed] Set to sinkObject outputted by Checkmarx Parser.
+    - sast_source_line: [If mode set to detailed] Set to sourceLineNumber outputted by Checkmarx Parser.
+    - sast_source_file_path: [If mode set to detailed] Set to sourceFilename outputted by Checkmarx Parser.
+    """
+    return [
+        "cwe",
+        "description",
+        "severity",
+        "file_path",
+        "line",
+        "date",
+        "nb_occurences",
+        "unique_id_from_tool",
+        "sast_source_object",
+        "sast_sink_object",
+        "sast_source_line",
+        "sast_source_file_path",
+    ]
+
+def get_dedupe_fields(self) -> list[str]:
+    """Return the list of fields used for deduplication in the Checkmarx Parser.
+
+    Fields:
+    - cwe: Set to cwe outputted by Checkmarx Parser.
+    - severity: Set to severity outputted by Checkmarx Scanner.
+    - file_path: Set to filename outputted by Checkmarx Scanner.
+    """
+    return [
+        "cwe",
+        "severity",
+        "file_path",
+    ]
