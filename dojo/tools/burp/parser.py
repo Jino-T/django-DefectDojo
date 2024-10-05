@@ -256,16 +256,32 @@ def get_fields(self) -> list[str]:
     - cwe: Set to cwe outputted from Burp Scanner. Multiple cwes is not supported by parser.
     """
 
-return [
-    "title",
-    "url",
-    "severity",
-    "param",
-    "scanner_confidence",
-    "description",
-    "mitigation",
-    "impact",
-    "unique_id_from_tool",
-    "vuln_id_from_tool",
-    "cwe",
-]
+    return [
+        "title",
+        "url",
+        "severity",
+        "param",
+        "scanner_confidence",
+        "description",
+        "mitigation",
+        "impact",
+        "unique_id_from_tool",
+        "vuln_id_from_tool",
+        "cwe",
+    ]
+
+
+def get_dedupe_fields(self) -> list[str]:
+    """Return the list of dedupe fields used in the Burp Parser
+
+    Fields:
+    - title: Made using Burp scanner output's name.
+    - cwe: Set to cwe outputted from Burp Scanner. Multiple cwes is not supported by parser.
+    - description: Made by combining URL, url_host, path, and detail.
+    """
+    #NOTE: uses legacy dedupe: ['title', 'cwe', 'line', 'file_path', 'description']
+    return [
+        "title",
+        "cwe",
+        "description",
+    ]

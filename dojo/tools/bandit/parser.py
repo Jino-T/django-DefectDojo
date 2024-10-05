@@ -87,18 +87,14 @@ def get_fields(self) -> list[str]:
     - date: Set to date from Bandit Scanner.
     - vuln_id_from_tool: Made from joining test_name and test_id.
     - nb_occurences: Initially set to 1 then updated.
-    - scanner_confidence: Based off of issue_confidence from Bandit Scanner.
     """
     return [
         "title",
-        "test",
         "description",
         "severity",
         "file_path",
         "line",
         "date",
-        "static_finding",
-        "dynamic_finding",
         "vuln_id_from_tool",
         "nb_occurences",
     ]

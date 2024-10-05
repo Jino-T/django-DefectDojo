@@ -185,9 +185,12 @@ def get_dedupe_fields(self) -> list[str]:
 
     Fields:
     - severity: Severity converted from Aqua format into Defect Dojo format.
+    - vulnerability_ids: 
     - component_name: Set to name returned from Aqua Scanner.
     - component_version: Set to version returned from Aqua Scanner.
+
     """
+    #NOTE: vulnerability_ids is not provided by parser
     return [
         "severity",
         "component_name",
@@ -217,4 +220,17 @@ def get_dedupe_fields(self) -> list[str]:
 #        "severity",
 #        "impact",
 #        "mitigation",
+#    ]
+# Dedupe for v2 based on default dedupe values
+#def get_dedupe_fields(self) -> list[str]:
+#    """Return the list of fields used for deduplication in the Aqua Parser V2.
+#
+#    Fields:
+#    - title: Created by combining the finding's cve and file_path
+#    - description: Text describing finding
+#    """
+#    #NOTE: vulnerability_ids is not provided by parser
+#    return [
+#        "title",
+#        "description",
 #    ]
