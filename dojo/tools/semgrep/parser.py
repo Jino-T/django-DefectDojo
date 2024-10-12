@@ -69,3 +69,43 @@ class SemgrepParser(object):
             return "High"
         else:
             raise ValueError(f"Unknown value for severity: {val}")
+
+def get_fields(self) -> list[str]:
+    """Return the list of fields used in the Semgrep Parser.
+
+    Fields:
+    - title: Set to the title outputted by the Semgrep Scanner.
+    - severity: Set to severity from Semgrep Scanner that has been converted to DefectDojo format.
+    - description: Custom description made from elements outputted by Semgrep Scanner.
+    - file_path: Set to filepath from Semgrep Scanner.
+    - line: Set to line from Semgrep Scanner.
+    - vuln_id_from_tool: Set to Vuln Id from Semgrep Scanner.
+    - nb_occurences: Initially set to 1 then updated.
+    """
+    return [
+        "title",
+        "severity",
+        "description",
+        "file_path",
+        "line",
+        "vuln_id_from_tool",
+        "nb_occurences",
+    ]
+
+def get_dedupe_fields(self) -> list[str]:
+    """Return the list of fields used for deduplication in the Semgrep Parser.
+
+    Fields:
+    - title: Set to the title outputted by the Semgrep Scanner.
+    - line: Set to line from Semgrep Scanner.
+    - file_path: Set to filepath from Semgrep Scanner.
+    - description: Custom description made from elements outputted by Semgrep Scanner.
+
+    NOTE: uses legacy dedupe: ['title', 'cwe', 'line', 'file_path', 'description']
+    """
+    return [
+        "title",
+        "line",
+        "file_path",
+        "description",
+    ]

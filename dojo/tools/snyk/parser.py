@@ -167,3 +167,43 @@ class SnykParser(object):
             finding.mitigation = finding.description[remediation_index:references_index]
 
         return finding
+
+def get_fields(self) -> list[str]:
+    """Return the list of fields used in the Snyk Parser.
+
+    Fields:
+    - title: Made from vulnerability and vulnerability title.
+    - severity: Set to cvssScore from Snyk Scanner and translated into DefectDojo format.
+    - severity_justification: Made from combining data about the cvssScore.
+    - description: Made from details on veulnerability.
+    - component_name: Set to vulnerability packageName from Snyk Parser.
+    - component_version: Set to vulnerability version from Snyk Parser.
+    - file_path: Made by Snyk parser while removing versions.
+    - vuln_id_from_tool: Set to vulnerability id from Snyk Scanner.
+    """
+    return [
+        "title",
+        "severity",
+        "severity_justification",
+        "description",
+        "component_name"
+        "component_version"
+        "file_path",
+        "vuln_id_from_tool",
+    ]
+
+def get_dedupe_fields(self) -> list[str]:
+    """Return the list of fields used for deduplication in the Snyk Parser.
+
+    Fields:
+    - vuln_id_from_tool: Set to vulnerability id from Snyk Scanner.
+    - file_path: Made by Snyk parser while removing versions.
+    - component_name: Set to vulnerability packageName from Snyk Parser.
+    - component_version: Set to vulnerability version from Snyk Parser.
+    """
+    return [
+        "vuln_id_from_tool",
+        "file_path",
+        "component_name"
+        "component_version"
+    ]

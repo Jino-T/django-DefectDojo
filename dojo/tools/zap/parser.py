@@ -60,7 +60,6 @@ class ZapParser(object):
                 items.append(find)
         return items
 
-
 def get_attrib_from_subnode(xml_node, subnode_xpath_expr, attrib_name):
     """
     Finds a subnode in the item node and the retrieves a value from it
@@ -195,3 +194,35 @@ class Item(object):
             return sub_node.text
 
         return None
+
+def get_fields(self) -> list[str]:
+    """Return the list of fields used in the Zap Parser.
+
+    Fields:
+    - title: Set to name from Zap Scanner.
+    - cwe: Set to cwe from Zap Scanner.
+    - description: Custom description made from data outputted by Zap Scanner.
+    - severity: Set to severity from Zap Scanner.
+    - mitigation: Set to solution from Zap Scanner.
+    """
+    return [
+        "title",
+        "cwe",
+        "description",
+        "severity",
+        "mitigation",
+    ]
+
+def get_dedupe_fields(self) -> list[str]:
+    """Return the list of fields used for deduplication in the Zap Parser.
+
+    Fields:
+    - title: Set to name from Zap Scanner.
+    - cwe: Set to cwe from Zap Scanner.
+    - severity: Set to severity from Zap Scanner.
+    """
+    return [
+        "title",
+        "cwe",
+        "severity",
+    ]
