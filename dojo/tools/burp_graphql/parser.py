@@ -10,6 +10,65 @@ logger = logging.getLogger(__name__)
 
 
 class BurpGraphQLParser:
+
+    def get_fields(self) -> list[str]:
+        """
+        Return the list of fields used in the Burp Graphql Parser
+
+        Fields:
+        - title: Set to title from Burp Parser.
+        - description: Set to description from Burp Parser.
+        - severity: Set to severity outputted by Burp Scanner.
+        - mitigation: Made using remediation that was ouputted by Burp scanner.
+
+        - url: URL outputted by Burp Scanner.
+        - param: Burp parameters combined to form param.
+        - scanner_confidence: Converted from Burp format (Certain, Firm, or Tentative) into Defect Dojo integer format.
+        - false_p: Set to false.
+        - duplicate: Set to false.
+        - out_of_scope: Set to false.
+        - dynamic_finding: Set to true.
+        - impact: Set to background returned by Burp Scanner.
+        - unique_id_from_tool: Set to serial_number returned by Burp Scanner.
+        - vuln_id_from_tool: Taken from output of Burp Scanner.
+        - cwe: Set to cwe outputted from Burp Scanner. Multiple cwes is not supported by parser.
+        """
+        return [
+            "title",
+            "url",
+            "severity",
+            "param",
+            "scanner_confidence",
+            "description",
+            "mitigation",
+            "false_p",
+            "duplicate",
+            "out_of_scope",
+            "dynamic_finding",
+            "impact",
+            "unique_id_from_tool",
+            "vuln_id_from_tool",
+            "cwe",
+        ]
+
+    def get_dedupe_fields(self) -> list[str]:
+        """
+        Return the list of dedupe fields used in the Burp Graphql Parser
+
+        Fields:
+        - title: Made using Burp scanner output's name.
+        - cwe: Set to cwe outputted from Burp Scanner. Multiple cwes is not supported by parser.
+        - description: Made by combining URL, url_host, path, and detail.
+
+        NOTE: uses legacy dedupe: ['title', 'cwe', 'line', 'file_path', 'description']
+        NOTE: line and file_path is not provided by parser
+        """
+        return [
+            "title",
+            "cwe",
+            "description",
+        ]
+
     def get_scan_types(self):
         return ["Burp GraphQL API"]
 

@@ -9,6 +9,51 @@ logger = logging.getLogger(__name__)
 
 
 class BurpEnterpriseParser:
+
+    def get_fields(self) -> list[str]:
+        """
+        Return the list of fields used in the Burp Enterprise Parser
+
+        Fields:
+        - severity: Set to severity from Burp Enterprise Scanner translated into Defect Dojo format.
+        - false_p: Set to true or false based on status of finding.
+        - duplicate: Set to true or false based on status of finding.
+        - out_of_scope: Set to true or false based on status of finding.
+        - mitigated: Set to true or false based on status of finding.
+        - static_finding: Set to false.
+        - dynamic_finding: Set to false.
+        - cwe: Set to cwe from Burp API Scanner.
+        - vulnerability_ids: Set to vulnerability id from Burp API Scanner.
+        - title: Set to name from Burp API Scanner.
+        """
+        return [
+            "severity",
+            "false_p",
+            "duplicate",
+            "out_of_scope",
+            "mitigated",
+            "static_finding",
+            "dynamic_finding",
+            "cwe",
+            "vulnerability_ids",
+            "title",
+        ]
+
+    def get_dedupe_fields(self) -> list[str]:
+        """
+        Return the list of dedupe fields used in the Burp Enterprise Parser
+
+        Fields:
+        - title: Set to name from Burp API Scanner.
+        - severity: Set to severity from Burp Enterprise Scanner translated into Defect Dojo format.
+        - cwe: Set to cwe from Burp API Scanner.
+        """
+        return [
+            "title",
+            "severity",
+            "cwe",
+        ]
+
     vulnerability_list_xpath = (
         "/html/body/div/div[contains(@class, 'section details')]/div[contains(@class, 'issue-container')]"
     )

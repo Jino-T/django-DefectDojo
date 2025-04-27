@@ -19,6 +19,52 @@ class BurpApiParser:
 
     """Parser that can load data from Burp API"""
 
+    def get_fields(self) -> list[str]:
+        """
+        Return the list of fields used in the Burp API Parser
+
+        Fields:
+        - title: Set to Burp Issue Name from Burp Scanner.
+        - severity: Set to severity outputted by Burp Scanner converted into Defect Dojo format.
+        - description: Made by combining title, serial number, type index, confidence, and description from the Burp Scanner.
+        - mitigation: Set to "No mitigation procided."
+        - false_p: Set to true or false based on status of finding.
+        - impact: Set to "No impact procided."
+        - static_finding: Set to false.
+        - dynamic_finding: Set to false.
+        - unique_id_from_tool: Set to serial_number returned by Burp Scanner.
+        - vuln_id_from_tool: Set to type_index of Burp Scanner.
+        - scanner_confidence: Set to confidence from Burp Scanner converted to Defecct Dojo format.
+        """
+        return [
+            "title",
+            "severity",
+            "description",
+            "mitigation",
+            "false_p",
+            "impact",
+            "static_finding",
+            "dynamic_finding",
+            "unique_id_from_tool",
+            "vuln_id_from_tool",
+            "scanner_confidence",
+        ]
+
+    def get_dedupe_fields(self) -> list[str]:
+        """
+        Return the list of dedupe fields used in the Burp API Parser
+
+        Fields:
+        - title: Set to Burp Issue Name from Burp Scanner.
+        - severity: Set to severity outputted by Burp Scanner converted into Defect Dojo format.
+        - vuln_id_from_tool: Set to type_index of Burp Scanner.
+        """
+        return [
+            "title",
+            "severity",
+            "vuln_id_from_tool",
+        ]
+
     def get_scan_types(self):
         return ["Burp REST API"]
 

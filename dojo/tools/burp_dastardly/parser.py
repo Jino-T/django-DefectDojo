@@ -9,6 +9,48 @@ logger = logging.getLogger(__name__)
 
 class BurpDastardlyParser:
 
+    def get_fields(self) -> list[str]:
+        """
+        Return the list of fields used in the Burp Dastardly Parser
+
+        Fields:
+        - title: Set to message from Burp Scanner.
+        - url: Set to name from Burp Scanner.
+        - severity: Set to type from Burp Scanner.
+        - description: Set to text from Burp Scanner.
+        - false_p: Set to false.
+        - duplicate: Set to false.
+        - out_of_scope: Set to false.
+        - mitigated: Set to none.
+        - dynamic_finding: Set to true.
+        """
+        return [
+            "title",
+            "url",
+            "severity",
+            "description",
+            "false_p",
+            "duplicate",
+            "out_of_scope",
+            "mitigated",
+            "dynamic_finding",
+        ]
+
+    def get_dedupe_fields(self) -> list[str]:
+        """
+        Return the list of dedupe fields used in the Burp Dastardly Parser
+
+        Fields:
+        - title: Set to message from Burp Scanner.
+        - severity: Set to type from Burp Scanner.
+
+        NOTE: vuln_id_from_tool is not provided by parser
+        """
+        return [
+            "title",
+            "severity",
+        ]
+
     def get_scan_types(self):
         return ["Burp Dastardly Scan"]
 
