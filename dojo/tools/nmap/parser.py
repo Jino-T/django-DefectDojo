@@ -8,6 +8,48 @@ from dojo.models import Endpoint, Finding
 
 
 class NmapParser:
+
+    def get_fields(self) -> list[str]:
+        """
+        Return the list of fields used in the nmap Parser.
+
+        Fields:
+        - title: Made from endpoint port and protocol along with vulnerability id from nmap Scanner.
+        - description: Made from combining host info, service info, script id, script output, vulnerability id, and component CPE from nmap Scanner.
+        - severity: Set to severity from nmap Scanner and translated into DefectDojo format.
+        - vuln_id_from_tool: Set to script id from nmap Scanner.
+        - date: Set to report date from nmap Scanner.
+        - component_name: Set to component CPE product from nmap Parser.
+        - component_version: Set to component CPE version from nmap Parser.
+        - nb_occurences: Set to 1 and increased based on finding status.
+        """
+        return [
+            "title",
+            "description",
+            "severity",
+            "vuln_id_from_tool",
+            "date",
+            "component_name"
+            "component_version",
+            "nb_occurences"
+        ]
+
+    def get_dedupe_fields(self) -> list[str]:
+        """
+        Return the list of fields used for deduplication in the nmap Parser.
+
+        Fields:
+        - title: Made from endpoint port and protocol along with vulnerability id from nmap Scanner.
+        - description: Made from combining host info, service info, script id, script output, vulnerability id, and component CPE from nmap Scanner.
+
+        NOTE: uses legacy dedupe: ['title', 'cwe', 'line', 'file_path', 'description']
+        NOTE: cwe, line, and file_path are not provided by parser
+        """
+        return [
+            "title",
+            "description",
+        ]
+
     def get_scan_types(self):
         return ["Nmap Scan"]
 
