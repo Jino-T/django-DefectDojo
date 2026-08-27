@@ -40,9 +40,10 @@ from dojo.finding.helper import (
     save_vulnerability_ids,
 )
 from dojo.jira import services as jira_services
+from dojo.location.feature import locations_enabled
 from dojo.models import SEVERITIES, Dojo_User, Finding, Test_Type
 from dojo.notifications.helper import async_create_notification, process_tag_notifications
-from dojo.utils import get_object_or_none
+from dojo.utils import calculate_grade, get_object_or_none
 
 if TYPE_CHECKING:
     from dojo.models import Test
@@ -355,3 +356,106 @@ def process_note_added(finding: Finding, note: Notes, *, user) -> None:
         jira_services.add_comment(finding, note)
     elif finding.has_jira_group_issue:
         jira_services.add_comment(finding.finding_group, note)
+
+
+def reassign_finding_product_endpoints(findings, old_product, new_product) -> None:
+    """
+    Re-home the endpoints (legacy) or locations (V3) of ``findings`` onto ``new_product``.
+
+    An endpoint/location carries its own product association, independent of the
+    finding -> test -> engagement -> product chain, so moving findings between products
+    would otherwise leave their endpoints/locations pointing at the source product.
+
+    Generalized from ``dojo.engagement.services.reassign_engagement_product_endpoints``
+    (#15575), which now delegates here: an engagement move is just the special case where
+    the finding set is "every finding in this engagement". A *finding* move (sc-14815)
+    passes an arbitrary set. HTTP-free so UI views, the API and the Pro move service can
+    all call it.
+
+    Call this **after** the findings have been re-pointed at the destination, for the same
+    reason the engagement entry point does: the shared-location bookkeeping below asks
+    "does anything still in ``old_product`` reference this?", and the moved findings must
+    already be excluded from that answer by their new test chain.
+
+    ``findings`` may be any queryset or iterable of findings; the ids are materialized up
+    front so a queryset defined in terms of the *source* product still behaves correctly
+    once the move has happened.
+    """
+    if old_product == new_product:
+        return
+
+    finding_ids = list(findings.values_list("id", flat=True)) if hasattr(findings, "values_list") else [
+        finding.id for finding in findings
+    ]
+    if not finding_ids:
+        return
+
+    if locations_enabled():
+        from dojo.location.models import (  # noqa: PLC0415 -- avoid import cycle
+            Location,
+            LocationFindingReference,
+            LocationProductReference,
+        )
+        # Distinct locations referenced by the moved findings
+        location_ids = set(
+            LocationFindingReference.objects.filter(
+                finding_id__in=finding_ids,
+            ).values_list("location_id", flat=True),
+        )
+        for location in Location.objects.filter(id__in=location_ids):
+            # Associate with the destination product and (re)assess its status, since an
+            # already-existing reference is returned without recomputation.
+            new_ref = location.associate_with_product(new_product)
+            new_ref.status = location.status_from_product(new_product)
+            new_ref.save(update_fields=["status"])
+            # For the source product: drop the association if no finding remaining there
+            # references this (shared) location, otherwise reassess its status because the
+            # moved finding no longer counts toward the old product.
+            still_used = LocationFindingReference.objects.filter(
+                location=location,
+                finding__test__engagement__product=old_product,
+            ).exists()
+            if still_used:
+                old_ref = LocationProductReference.objects.filter(
+                    location=location,
+                    product=old_product,
+                ).first()
+                if old_ref is not None:
+                    old_ref.status = location.status_from_product(old_product)
+                    old_ref.save(update_fields=["status"])
+            else:
+                location.disassociate_from_product(old_product)
+    else:
+        # TODO: Delete this after the move to Locations
+        from dojo.endpoint.utils import endpoint_get_or_create  # noqa: PLC0415 -- avoid import cycle
+        from dojo.models import Endpoint_Status  # noqa: PLC0415 -- avoid import cycle
+        statuses = Endpoint_Status.objects.filter(
+            finding_id__in=finding_ids,
+        ).select_related("endpoint")
+        # Cache re-homed endpoints so an endpoint shared across many findings is only
+        # get_or_create'd once for the destination product.
+        rehomed = {}
+        for status in statuses:
+            endpoint = status.endpoint
+            if endpoint.product_id == new_product.id:
+                continue
+            key = (endpoint.protocol, endpoint.host, endpoint.port, endpoint.path, endpoint.query, endpoint.fragment)
+            new_endpoint = rehomed.get(key)
+            if new_endpoint is None:
+                new_endpoint, _created = endpoint_get_or_create(
+                    protocol=endpoint.protocol,
+                    host=endpoint.host,
+                    port=endpoint.port,
+                    path=endpoint.path,
+                    query=endpoint.query,
+                    fragment=endpoint.fragment,
+                    product=new_product,
+                )
+                rehomed[key] = new_endpoint
+            status.endpoint = new_endpoint
+            status.save()
+
+    # Findings moved between products change the aggregate grade of both, so recompute
+    # the grade for the source and destination product.
+    dojo_dispatch_task(calculate_grade, old_product.id)
+    dojo_dispatch_task(calculate_grade, new_product.id)

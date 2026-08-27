@@ -151,6 +151,7 @@ Findings can be manually added by either clicking **New Finding** within the **F
 The ⋮ kebab menu next to Findings contains the following functions: 
 - **Edit Finding**: Edit the Finding.
 - **Copy Finding**: Creates a copy of the Finding in another Test. The copy can be saved to any Test within the same Engagement that you have permission to edit. Copying is useful when the same vulnerability needs to be tracked separately in more than one Test context.
+- **Move Finding**: Reassigns the Finding to a Test in a different Asset, rather than copying it. Unlike Copy Finding, the destination is not limited to the same Engagement. Set the destination in the **Move** section of the Edit Finding form, or move several Findings at once from a Findings list — see [Moving Findings to another Asset](/triage_findings/findings_workflows/pro__bulk_edit_findings/#move).
 - **Close Finding**: Initiates the process of closing the Finding.
 - **Request Review**: Initiates the Peer Review process and changes the Finding’s status to “Under Review.” More information about Peer Reviews can be found [here](/triage_findings/findings_workflows/finding_status_definitions/#under-review).
 - **Add Risk Acceptance**: Initiates the Risk Acceptance process. More information can be found [here](/triage_findings/findings_workflows/pro__risk_acceptance/).
@@ -180,6 +181,8 @@ The file will then appear in the Files section of the **Test Overview** table wi
 Findings can be edited in bulk from a Finding List, such as the table of All Findings accessible from the sidebar, or from the table of Findings within a specific Test.
 
 More information about how to bulk edit Findings can be found [here](/triage_findings/findings_workflows/editing_findings/#bulk-edit-findings). 
+
+Bulk edit is also how you reassign several Findings to a Test in a different Asset at once — see [Moving Findings to another Asset](/triage_findings/findings_workflows/pro__bulk_edit_findings/#move). 
 
 ### Closing Findings 
 Once the work on a Finding is complete, you can manually close it by clicking **Close Finding** within the Finding’s ⋮ kebab menu or gear menu. Alternatively, if a scan is re-imported into DefectDojo which does not contain a previously-recorded Finding, the previously-recorded Finding will automatically close.

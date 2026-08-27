@@ -34,6 +34,7 @@ The **Bulk Edit** button opens one form containing all of the field-level bulk a
 * **Review** — request or clear review on the selected Findings (see below).
 * **Push to Jira** — queue the selected Findings to push to Jira. Shown only when the Jira integration is enabled.
 * **Push to Connector** — dispatch the selected Findings to your configured connector. Shown only when that feature is enabled.
+* **Move** — reassign the selected Findings to a Test in a different Asset (see below).
 
 ### Replace Specific Tag
 
@@ -49,6 +50,28 @@ The **Review** action manages peer review across all selected Findings:
 * **Clear Review** — enter a **Review Note** (required) to take the selected Findings out of the *Under Review* state and clear their assigned reviewers.
 
 The reviewers you can choose from are the users with edit access to the selected Findings.
+
+### Move
+
+The **Move** section reassigns the selected Findings to a Test in a different Asset — useful when a single scan report covers several domains and its Findings all landed in one Asset.
+
+Choose the destination with the **Move to Asset**, **Engagement**, and **Test** dropdowns. Each narrows the next, so the Engagement list only offers Engagements in the Asset you picked, and the Test list only Tests in that Engagement. There are two ways to finish:
+
+* **Pick an existing Test.** The Findings are attached to that Test.
+* **Pick only an Asset** and tick **Create a matching engagement and test if none exists.** DefectDojo mirrors each Finding's current Engagement and Test into the destination Asset, matching an Engagement by **name** and a Test by **scan type and title**. An existing match is reused; only what is missing is created, and a created Engagement inherits the source Engagement's dates and lead.
+
+A selection can span several source Assets — each Finding is mirrored from its own Engagement and Test.
+
+Moving a Finding also updates the things that belong to its old position in the hierarchy:
+
+* Its **Endpoints** (or **Locations**) are re-homed onto the destination Asset, so they no longer point at the Asset it came from. An Endpoint shared with a Finding that stayed behind is left in place for that Finding.
+* It is removed from its **Finding Group**, because a group belongs to a single Test.
+* It is removed from any **Risk Acceptance** on the source Engagement, because a Risk Acceptance belongs to a single Engagement. Re-accept the risk in the destination Engagement if it still applies.
+* Its **SLA** dates are recalculated against the destination Asset's SLA configuration, which may change its due date.
+* **Deduplication** runs again in the destination's scope.
+* A **note** is added to each moved Finding recording where it came from and where it went.
+
+Moving requires edit permission on every selected Finding and on the destination Asset.
 
 ## Risk Acceptance, Finding Group, Merge, and Delete
 
